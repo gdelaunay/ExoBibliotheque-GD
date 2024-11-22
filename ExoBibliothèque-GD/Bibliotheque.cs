@@ -1,23 +1,72 @@
 using System.Runtime.CompilerServices;
+using System.Xml;
+using System.Xml.Serialization;
 using Microsoft.VisualBasic;
 
 namespace ExoBibliothèque_GD;
 
 public class Bibliotheque
 {
-    public static List<Livre> livres = new List<Livre>();
-    public static List<Utilisateur> utilisateurs = new List<Utilisateur>();
-    public static Utilisateur utilisateurActuel;
-    public static bool quitter = false;
-    static void Main(string[] args)
+    public List<Livre> livres;
+    public List<Utilisateur> utilisateurs;
+    public Utilisateur utilisateurActuel;
+    public bool quitter;
+    public string cheminDossier;
+    public string fichierUtilisateurs;
+    public string fichierLivres;
+
+    public Bibliotheque()
     {
+        livres = new List<Livre>();
+        utilisateurs = new List<Utilisateur>();
+        quitter = false;
+        cheminDossier = "C:\\Users\\Goulwen\\RiderProjects\\ExoBibliothèque-GD\\ExoBibliothèque-GD";
+        fichierUtilisateurs = Path.Combine(cheminDossier, "utilisateurs.xml");
+        fichierLivres = Path.Combine(cheminDossier, "livres.xml");
+    }
+   /* static void Main(string[] args)
+    {
+        // Si les fichiers n'existent pas : 
+        //XmlWriter.Create(fichierUtilisateurs);
+        //XmlWriter.Create(fichierLivres);
+        //sauvegarderMemoire();
+        string test = "testdebug";
+        ChargerMemoire();
         utilisateurActuel = MenuConnexion();
+        Console.WriteLine(utilisateurActuel);
         while (quitter == false)
         {
             Menu();
         }
     }
-    static Utilisateur MenuConnexion()
+*/
+   public void SauvegarderMemoire()
+    {
+        using (Stream stream = File.Open(fichierLivres, FileMode.Open))
+        {
+            var xmlSerializer = new XmlSerializer(livres.GetType());
+            xmlSerializer.Serialize(stream, livres);
+        }
+        using (Stream stream = File.Open(fichierUtilisateurs, FileMode.Open))
+        {
+            var xmlSerializer = new XmlSerializer(utilisateurs.GetType());
+            xmlSerializer.Serialize(stream, utilisateurs);
+        }
+    }
+    public void ChargerMemoire()
+    {
+        using (Stream stream = File.Open(fichierLivres, FileMode.Open))
+        {
+            var xmlSerializer = new XmlSerializer(livres.GetType());
+            livres = (List<Livre>)xmlSerializer.Deserialize(stream);
+        }
+        using (Stream stream = File.Open(fichierUtilisateurs, FileMode.Open))
+        {
+            var xmlSerializer = new XmlSerializer(utilisateurs.GetType());
+            utilisateurs = (List<Utilisateur>)xmlSerializer.Deserialize(stream);
+        }
+    }
+    public Utilisateur MenuConnexion()
     {
         Utilisateur utilisateurTrouve = null;
         
@@ -55,11 +104,12 @@ public class Bibliotheque
             Console.WriteLine("Email :");
             string email = Console.ReadLine() ?? string.Empty;
             utilisateurTrouve = new Utilisateur(nom, email);
+            utilisateurs.Add(utilisateurTrouve);
         };
         
         return utilisateurTrouve;
     }
-    static void Menu()
+    public void Menu()
     {
         int choix = Question();
         switch (choix)
@@ -81,10 +131,10 @@ public class Bibliotheque
                 break;
         }
     }
-    static int Question()
+    public int Question()
     {
         int choix = 0;
-        int[] options = [1, 2, 3, 4];
+        int[] options = [1, 2, 3, 4, 5];
 
         while (!options.Contains(choix))
         {
@@ -97,17 +147,18 @@ public class Bibliotheque
             choix = int.Parse(Console.ReadLine() ?? string.Empty);
             if (!options.Contains(choix))
             {
-                Console.WriteLine("Je n'ai pas compris votre choix, merci de répondre 1, 2, 3, ou 4");
+                Console.WriteLine("Je n'ai pas compris votre choix, merci de répondre 1, 2, 3, 4, ou 5");
             }
         }
         return choix;
     }
 
-    static void Quitter()
+    public void Quitter()
     {
+        SauvegarderMemoire();
         quitter = true;
     }
-    static void EmprunterLivre()
+    public void EmprunterLivre()
     {
         Console.WriteLine("Quel est le titre du livre que vous voulez emprunter ? ");
         string titreRecherche = Console.ReadLine() ?? string.Empty;
@@ -124,7 +175,7 @@ public class Bibliotheque
         }
         Console.WriteLine(String.Empty);
     }
-    static Livre RechercherLivre()
+    Livre RechercherLivre()
     {
         Console.WriteLine("Quel est le titre du livre que vous voulez rechercher ? ");
         string titreRecherche = Console.ReadLine() ?? string.Empty;
@@ -140,7 +191,7 @@ public class Bibliotheque
         Console.WriteLine(String.Empty);
         return livreTrouve;
     }
-    static void ListerLivres()
+    public void ListerLivres()
     {
         Console.WriteLine("Bibliothèque :");
         foreach (Livre livre in livres)
@@ -150,9 +201,15 @@ public class Bibliotheque
                 Console.WriteLine(livre.ToString());
             }
         }
+        Console.WriteLine("utilisateurs :");
+        foreach (Utilisateur utilisateur in utilisateurs)
+        {
+            Console.WriteLine(utilisateur.nom);
+            
+        }
         Console.WriteLine(String.Empty);
     }
-    static Livre NouveauLivre()
+    public Livre NouveauLivre()
     {
         string titre;
         string auteur;
@@ -178,7 +235,7 @@ public class Bibliotheque
         }
         return new Livre(titre, auteur, disponible.Value);
     }
-    static void AjouterLivre(Livre livre)
+    public void AjouterLivre(Livre livre)
     {
         livres.Add(livre);
         Console.WriteLine("Livre ajouté : " + livre.ToString() + "\n");
