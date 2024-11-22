@@ -107,7 +107,7 @@ public class Bibliotheque
                 Console.WriteLine("Merci de répondre par \"true\" ou par \"false\".");
             }
         }
-        return new Livre(titre, auteur, (bool)disponible);
+        return new Livre(titre, auteur, disponible.Value);
     }
     static void AjouterLivre(Livre livre)
     {
