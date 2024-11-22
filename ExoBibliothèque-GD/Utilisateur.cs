@@ -16,6 +16,7 @@ public class Utilisateur
         this.livresEmpruntes = new List<Livre>(); 
     }
     
+    // ajoute un livre à la liste de livres empruntés de l'utilisateur, si il n'a pas atteint la limite d'emprunts
     public void emprunterLivre(Livre livre)
     {
         if (livresEmpruntes.Count < limiteEmprunts)

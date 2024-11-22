@@ -14,7 +14,7 @@ public class Bibliotheque
     public string cheminDossier;
     public string fichierUtilisateurs;
     public string fichierLivres;
-
+    
     public Bibliotheque()
     {
         livres = new List<Livre>();
@@ -24,24 +24,11 @@ public class Bibliotheque
         fichierUtilisateurs = Path.Combine(cheminDossier, "utilisateurs.xml");
         fichierLivres = Path.Combine(cheminDossier, "livres.xml");
     }
-   /* static void Main(string[] args)
-    {
-        // Si les fichiers n'existent pas : 
-        //XmlWriter.Create(fichierUtilisateurs);
-        //XmlWriter.Create(fichierLivres);
-        //sauvegarderMemoire();
-        string test = "testdebug";
-        ChargerMemoire();
-        utilisateurActuel = MenuConnexion();
-        Console.WriteLine(utilisateurActuel);
-        while (quitter == false)
-        {
-            Menu();
-        }
-    }
-*/
+
+   // enregistre la liste d'utilisateurs et la liste de livres dans des fichiers xml
    public void SauvegarderMemoire()
     {
+        
         using (Stream stream = File.Open(fichierLivres, FileMode.Open))
         {
             var xmlSerializer = new XmlSerializer(livres.GetType());
@@ -53,6 +40,8 @@ public class Bibliotheque
             xmlSerializer.Serialize(stream, utilisateurs);
         }
     }
+   
+   // charge la liste d'utilisateurs et la liste de livres depuis des fichiers xml
     public void ChargerMemoire()
     {
         using (Stream stream = File.Open(fichierLivres, FileMode.Open))
@@ -66,6 +55,8 @@ public class Bibliotheque
             utilisateurs = (List<Utilisateur>)xmlSerializer.Deserialize(stream);
         }
     }
+    
+    // menu permettant de créer un compte ou de se connecter
     public Utilisateur MenuConnexion()
     {
         Utilisateur utilisateurTrouve = null;
@@ -109,6 +100,8 @@ public class Bibliotheque
         
         return utilisateurTrouve;
     }
+    
+    // menu principal du programme permettant de choisir quelle action opérer
     public void Menu()
     {
         int choix = Question();
@@ -131,6 +124,8 @@ public class Bibliotheque
                 break;
         }
     }
+    
+    // question posée par le menu principal du programme
     public int Question()
     {
         int choix = 0;
@@ -153,11 +148,14 @@ public class Bibliotheque
         return choix;
     }
 
+    // sauvegarde les données et quitte la boucle d'éxecution du programme
     public void Quitter()
     {
         SauvegarderMemoire();
         quitter = true;
     }
+    
+    // ajoute un livre à la liste de livres empruntés de l'utilisateur actuel et rend ce livre indisponible
     public void EmprunterLivre()
     {
         Console.WriteLine("Quel est le titre du livre que vous voulez emprunter ? ");
@@ -175,7 +173,9 @@ public class Bibliotheque
         }
         Console.WriteLine(String.Empty);
     }
-    Livre RechercherLivre()
+    
+    // recherche un livre dans la liste de la bibliothèque par son titre
+    public Livre RechercherLivre()
     {
         Console.WriteLine("Quel est le titre du livre que vous voulez rechercher ? ");
         string titreRecherche = Console.ReadLine() ?? string.Empty;
@@ -191,6 +191,8 @@ public class Bibliotheque
         Console.WriteLine(String.Empty);
         return livreTrouve;
     }
+    
+    // liste l'intégralité des livres disponibles dans la bibliothèque
     public void ListerLivres()
     {
         Console.WriteLine("Bibliothèque :");
@@ -209,6 +211,8 @@ public class Bibliotheque
         }
         Console.WriteLine(String.Empty);
     }
+    
+    // créé un nouveau livre et l'ajoute à la bibliothèque
     public Livre NouveauLivre()
     {
         string titre;
@@ -235,6 +239,8 @@ public class Bibliotheque
         }
         return new Livre(titre, auteur, disponible.Value);
     }
+    
+    // ajoute un livre à la bibliothèque
     public void AjouterLivre(Livre livre)
     {
         livres.Add(livre);
