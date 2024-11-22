@@ -203,13 +203,7 @@ public class Bibliotheque
                 Console.WriteLine(livre.ToString());
             }
         }
-        Console.WriteLine("utilisateurs :");
-        foreach (Utilisateur utilisateur in utilisateurs)
-        {
-            Console.WriteLine(utilisateur.nom);
-            
-        }
-        Console.WriteLine(String.Empty);
+       Console.WriteLine(String.Empty);
     }
     
     // créé un nouveau livre et l'ajoute à la bibliothèque
@@ -245,5 +239,10 @@ public class Bibliotheque
     {
         livres.Add(livre);
         Console.WriteLine("Livre ajouté : " + livre.ToString() + "\n");
+    }
+
+    public void sayHello()
+    {
+        Console.WriteLine("Hello !");
     }
 }
