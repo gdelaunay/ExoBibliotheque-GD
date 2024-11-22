@@ -3,8 +3,8 @@ namespace ExoBibliothèque_GD;
 public class Livre
 {
     public string titre { get; set; }
-    private string auteur { get; set; }
-    private bool disponible { get; set; }
+    public string auteur { get; set; }
+    public bool disponible { get; set; }
 
     public Livre(string titre, string auteur, bool disponible)
     { 
