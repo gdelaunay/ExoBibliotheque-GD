@@ -7,11 +7,11 @@ public class Utilisateur
     public List<Livre> livresEmpruntes { get; set; }
     public static int limiteEmprunts  { get; set; } = 3;
 
-    public Utilisateur(string nom, string email, List<Livre> livresEmpruntes)
+    public Utilisateur(string nom, string email)
     {
         this.nom = nom;
         this.email = email;
-        this.livresEmpruntes = livresEmpruntes;
+        this.livresEmpruntes = new List<Livre>(); 
     }
     
     public void emprunterLivre(Livre livre)

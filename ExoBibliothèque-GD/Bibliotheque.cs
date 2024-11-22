@@ -6,15 +6,59 @@ namespace ExoBibliothèque_GD;
 public class Bibliotheque
 {
     public static List<Livre> livres = new List<Livre>();
+    public static List<Utilisateur> utilisateurs = new List<Utilisateur>();
+    public static Utilisateur utilisateurActuel;
     public static bool quitter = false;
     static void Main(string[] args)
     {
+        utilisateurActuel = MenuConnexion();
         while (quitter == false)
         {
             Menu();
         }
     }
+    static Utilisateur MenuConnexion()
+    {
+        Utilisateur utilisateurTrouve = null;
+        
+        int choix = 0;
+        int[] options = [1, 2];
+        while (!options.Contains(choix))
+        {
+            Console.WriteLine("--------------------------------- Connexion ----------------------------------");
+            Console.WriteLine("[1] Se connecter");
+            Console.WriteLine("[2] Créer un compte");
+            choix = int.Parse(Console.ReadLine() ?? string.Empty);
+            if (!options.Contains(choix))
+            {
+                Console.WriteLine("Je n'ai pas compris votre choix, merci de répondre 1 ou 2");
+            }
+        }
 
+        if (choix == 1)
+        {
+            Console.WriteLine("Nom d'utilisateur :");
+            string nomUtilisateur = Console.ReadLine() ?? string.Empty;
+            utilisateurTrouve = utilisateurs.Find(utilisateur => utilisateur.nom == nomUtilisateur);
+            if (utilisateurTrouve == null)
+            {
+                Console.WriteLine("L'utilisateur n'existe pas, veuillez créer un compte.");
+                choix = 2;
+            }
+        } 
+        
+        if (choix == 2)
+        {
+            Console.WriteLine("------------------------- Création d'un utilisateur --------------------------");
+            Console.WriteLine("Nom utilisateur :");
+            string nom = Console.ReadLine() ?? string.Empty;
+            Console.WriteLine("Email :");
+            string email = Console.ReadLine() ?? string.Empty;
+            utilisateurTrouve = new Utilisateur(nom, email);
+        };
+        
+        return utilisateurTrouve;
+    }
     static void Menu()
     {
         int choix = Question();
@@ -30,6 +74,9 @@ public class Bibliotheque
                 RechercherLivre();
                 break;
             case 4:
+                EmprunterLivre();
+                break;
+            case 5:
                 Quitter();
                 break;
         }
@@ -45,7 +92,8 @@ public class Bibliotheque
             Console.WriteLine("- Ajouter un livre [1] ");
             Console.WriteLine("- Lister tous les livres [2] ");
             Console.WriteLine("- Rechercher un livre par titre [3]");
-            Console.WriteLine("- Quitter le programme [4]");
+            Console.WriteLine("- Emprunter un livre [4]");
+            Console.WriteLine("- Quitter le programme [5]");
             choix = int.Parse(Console.ReadLine() ?? string.Empty);
             if (!options.Contains(choix))
             {
@@ -59,7 +107,24 @@ public class Bibliotheque
     {
         quitter = true;
     }
-    static void RechercherLivre()
+    static void EmprunterLivre()
+    {
+        Console.WriteLine("Quel est le titre du livre que vous voulez emprunter ? ");
+        string titreRecherche = Console.ReadLine() ?? string.Empty;
+        Livre livreTrouve = livres.Find(livre => livre.titre == titreRecherche);
+        if (livreTrouve != null)
+        {
+            Console.WriteLine($"Livre trouvé : {livreTrouve.ToString()}");
+            utilisateurActuel.emprunterLivre(livreTrouve);
+            Console.WriteLine("Le livre a bien été emprunté");
+        }
+        else
+        {
+            Console.WriteLine("Pas trouvé de livre avec ce titre!");
+        }
+        Console.WriteLine(String.Empty);
+    }
+    static Livre RechercherLivre()
     {
         Console.WriteLine("Quel est le titre du livre que vous voulez rechercher ? ");
         string titreRecherche = Console.ReadLine() ?? string.Empty;
@@ -73,13 +138,17 @@ public class Bibliotheque
             Console.WriteLine("Pas trouvé de livre avec ce titre!");
         }
         Console.WriteLine(String.Empty);
+        return livreTrouve;
     }
     static void ListerLivres()
     {
         Console.WriteLine("Bibliothèque :");
         foreach (Livre livre in livres)
         {
-            Console.WriteLine(livre.ToString());
+            if (livre.disponible)
+            {
+                Console.WriteLine(livre.ToString());
+            }
         }
         Console.WriteLine(String.Empty);
     }
